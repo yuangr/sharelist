@@ -1,6 +1,6 @@
 # ShareList
 
-[![Build Status](https://api.travis-ci.com/reruin/sharelist.svg?branch=master)](https://travis-ci.com/reruin/sharelist)
+[![Build Status](https://github.com/reruin/sharelist/actions/workflows/ci.yml/badge.svg)](https://github.com/reruin/sharelist/actions/workflows/ci.yml)
 
 ## Introduction
 ShareList is an easy-to-use netdisk tool which supports that quickly mount GoogleDrive and OneDrive, and extends functions with plugins.

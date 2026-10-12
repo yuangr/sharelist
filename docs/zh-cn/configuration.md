@@ -1,99 +1,88 @@
-# 后台管理
-访问 ```http://localhost:33001/manage```，填写口令即可进入后台管理。
 
 ## 常规
+访问 ```http://localhost:33001/@manage```，填写口令即可进入后台管理。
 
-#### 切换语言
-切换ShareList界面语言，默认使用访问者的系统语言。
+### 后台管理
+设置后台管理密码。默认 ```sharelist```。
 
-#### 主题
-切换ShareList主题。
-
-#### 目录索引
-默认启用。如果只提供下载功能，可禁用此项。
-
-?> 系统管理员处于登录状态时，此项始终为```启用```。
-
-#### 详情预览
-默认启用。支持文档、图片、音频、视频的在线预览。
-
-#### 显示README.md内容
-默认启用。启用此项时，当前文件夹内的README.md文件将会被解析显示在页面底部。
-
-#### 开放上传
-默认禁用。
-
-#### 下载限制
-限制指定文件的下载权限。可使用正则表达式。例如:
-* 禁止所有文件下载 ```^$```
-* doc、pdf文件禁止下载 ```(?<!(doc|pdf))$```
-* abc 路径下的文件禁止下载 ```^((?!abc).)*$```
-* 允许 def 路径下的文件下载 ```def(?=\/)```
-
-#### 中转
-一般而言，下载使用的是各自挂载源的直连下载。启用此项后，所有下载都将使用本机中转。
-!> 某些挂载源因使用了Cookie的原因，会强制中转。
-
-#### 中转路径
-设置需要使用中转的路径。留空表示所有。
-
-#### 中转服务器
-如果不想使用本机中转，可在此处填写对应的中转服务器。当前支持：
-1. [cloudflare](zh-cn/advance?id=cf-worker中转)
-2. [Sharelist Proxy](zh-cn/advance?id=sharelist-proxy中转)
-
-ShareList 也支持配置多个中转服务器，只需用```;```分割即可，同时支持配置每个中转服务器的轮换权重。例如：   
-```https://upstream.com/|1;https://upstream2.com/|2```   
-上述表达式表示配置```upstream```和```upstream2```两台中转服务器，并按1:2分配请求。  
-
-#### 目录缓存时长
-单位 秒。ShareList内部会对文件夹数据进行缓存，设置此项可调整。
-
-#### 链接缓存时长
-同上。
-
-#### 下载链接有效期
-单位 秒。设置后，下载链接将在此时间段内有效。若要关闭此功能，请设置为0。  
-
-#### 忽略文件类型
-设置后对应类型的文件将不会显示。
-例如忽略图片：```jpg,png,gif,webp,bmp,jpeg```
-
-?> 系统管理员处于登录状态时，可见所有文件。
-
-#### 忽略路径
-设置后对应路径下的文件将不会显示。
-
-?> 系统管理员处于登录状态时，可见所有文件。
-
-#### WebDAV路径
-ShareList支持WebDAV导出，此处可设置访问路径。
-
-#### SMB
-ShareList支持SMB导出，此处可设置是否启用此功能。[详细使用](zh-cn/advance?id=SMB)
-
-#### SMB 端口
-设置SMB 端口，默认8445。
-
-#### SMB 匿名访问
-设置SMB是否支持匿名访问，默认支持。
-
-#### 验证码识别接口
-设置打码接口。
-
-#### 自定义样式
-设置自定义样式
-
-#### 自定义脚本
-设置自定义脚本，脚本将插入在页面的末尾。你可以在此处定义统计代码。
-
-## 插件配置
-
-## 口令
-设置后台管理密码。
-
-## 网站标题
+### 网站标题
 设置网站标题。
 
-## 虚拟路径
-设置网盘挂载源。参考 [挂载源](zh-cn/plugins/README.md) 部分。
+### 目录索引
+默认启用。如果只提供下载功能，可禁用此项。
+
+### 展开单一挂载盘
+默认启用。如果只有一个挂载盘，将默认展开。
+
+### 允许下载
+默认启用。
+
+### 忽略路径
+设置禁止访问的目录/文件路径。支持 [gitignore](http://git-scm.com/docs/gitignore) 表达式
+
+### 加密文件名
+默认```.passwd```，修改此项自定义加密文件名。
+
+### WebDAV 路径
+WebDAV路径。
+
+### WebDAV 代理
+默认启用。
+
+### WebDAV 用户
+默认 ```admin```。
+
+### WebDAV 密码
+默认 ```sharelist```。
+
+### 自定义脚本
+默认主题支持自定义脚本。可用于插入统计脚本。
+
+### 自定义样式
+默认主题支持自定义样式。
+
+
+## 高级用法
+在需加密目录内新建 ```.passwd``` 文件（此项可修改），```type```为验证方式，```data```为验证内容。  
+例如：    
+```yaml
+type: basic
+data:
+  - 123456
+  - abcdef
+``` 
+
+可使用密码```123456```，```abcdef```验证。
+
+***
+
+### 获取文件夹ID
+保持后台登录状态，回到首页列表，点击文件夹后的 '!' 按钮 可查看文件夹ID。   
+
+***
+
+### 反向代理
+使用反代时，请添加以下配置。  
+
+#### Nginx  
+```ini 
+  proxy_set_header Host  $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+
+  proxy_set_header Range $http_range;
+  proxy_set_header If-Range $http_if_range;
+  proxy_no_cache $http_range $http_if_range;
+```   
+如果使用上传功能，请调整 nginx 上传文件大小限制。   
+```
+  client_max_body_size 8000m;
+```   
+#### Caddy   
+```ini
+  header_upstream Host {host}
+  header_upstream X-Real-IP {remote}
+  header_upstream X-Forwarded-For {remote}
+  header_upstream X-Forwarded-Proto {scheme}
+```
